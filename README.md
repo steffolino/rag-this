@@ -29,6 +29,12 @@ a plain structured-data retriever, routed by simple predicates.
 ## Install
 
 ```bash
+npm install @steffolino/rag-this
+```
+
+Or directly from GitHub (no npm registry needed, builds on install):
+
+```bash
 npm install github:steffolino/rag-this
 ```
 
@@ -39,7 +45,7 @@ import {
   createOpeningHoursRetriever,
   createRoutedRetriever,
   type OpeningHoursEntry,
-} from "rag-this";
+} from "@steffolino/rag-this";
 
 const entries: OpeningHoursEntry[] = [
   { location: "Main Library", weekday: 1, opens: "09:00", closes: "20:00" },

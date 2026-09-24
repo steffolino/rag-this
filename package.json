@@ -1,5 +1,5 @@
 {
-  "name": "rag-this",
+  "name": "@steffolino/rag-this",
   "version": "0.1.0",
   "description": "A small, dependency-light TypeScript library for composable structured retrieval, built as a building block for larger RAG pipelines.",
   "keywords": [
