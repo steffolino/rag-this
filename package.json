@@ -1,7 +1,24 @@
 {
   "name": "rag-this",
   "version": "0.1.0",
-  "private": true,
+  "description": "A small, dependency-light TypeScript library for composable structured retrieval, built as a building block for larger RAG pipelines.",
+  "keywords": [
+    "retrieval",
+    "rag",
+    "structured-retrieval",
+    "typescript",
+    "opening-hours"
+  ],
+  "author": "steffolino",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steffolino/rag-this.git"
+  },
+  "homepage": "https://github.com/steffolino/rag-this#readme",
+  "bugs": {
+    "url": "https://github.com/steffolino/rag-this/issues"
+  },
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -14,6 +31,9 @@
   "files": [
     "dist/src"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
