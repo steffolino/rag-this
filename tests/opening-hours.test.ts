@@ -83,6 +83,61 @@ describe("createOpeningHoursRetriever", () => {
     expect(result).toEqual({ evidence: [] });
   });
 
+  describe("date queries", () => {
+    it("resolves a specific date to its weekday's recurring hours", async () => {
+      const retriever = createOpeningHoursRetriever([
+        {
+          location: "TIB Conti-Campus",
+          weekday: 3, // 2026-12-23 is a Wednesday
+          opens: "08:00",
+          closes: "22:00",
+        },
+      ]);
+
+      const result = await retriever.retrieve({
+        text: "Is the TIB Conti-Campus open on 2026-12-23?",
+        metadata: {
+          location: "TIB Conti-Campus",
+          date: "2026-12-23",
+        },
+      });
+
+      expect(result.evidence[0]?.content).toBe(
+        "TIB Conti-Campus is open from 08:00 to 22:00.",
+      );
+    });
+
+    it("prefers a date-specific exception over the recurring weekday rule", async () => {
+      const retriever = createOpeningHoursRetriever([
+        {
+          location: "TIB Conti-Campus",
+          weekday: 5, // 2026-12-25 is a Friday, normally open
+          opens: "08:00",
+          closes: "22:00",
+        },
+        {
+          location: "TIB Conti-Campus",
+          weekday: 5,
+          date: "2026-12-25",
+          opens: null,
+          closes: null,
+        },
+      ]);
+
+      const result = await retriever.retrieve({
+        text: "Is the TIB Conti-Campus open on Christmas Day 2026?",
+        metadata: {
+          location: "TIB Conti-Campus",
+          date: "2026-12-25",
+        },
+      });
+
+      expect(result.evidence[0]?.content).toBe(
+        "TIB Conti-Campus is closed.",
+      );
+    });
+  });
+
   describe("German content", () => {
     it("describes a closed location in German", async () => {
       const retriever = createOpeningHoursRetriever(

@@ -57,6 +57,12 @@ const germanQueries: RetrievalQuery[] = [
   },
 ];
 
+// "Hat die Bibliothek über die Weihnachtsfeiertage offen?" — the library
+// doesn't interpret that phrase itself (no NL/intent parsing); the
+// calling application decides which calendar dates count as "the
+// holidays" and asks the retriever once per date instead.
+const christmasDates = ["2026-12-24", "2026-12-25", "2026-12-26", "2026-12-31"];
+
 async function main(): Promise<void> {
   const english = [];
   for (const query of englishQueries) {
@@ -68,7 +74,16 @@ async function main(): Promise<void> {
     german.push({ query, result: await openingHoursRetrieverDe.retrieve(query) });
   }
 
-  console.log(JSON.stringify({ english, german }, null, 2));
+  const christmasHours = [];
+  for (const date of christmasDates) {
+    const result = await openingHoursRetrieverDe.retrieve({
+      text: `Ist die TIB Conti-Campus am ${date} geöffnet?`,
+      metadata: { location: "TIB Conti-Campus", date },
+    });
+    christmasHours.push({ date, result });
+  }
+
+  console.log(JSON.stringify({ english, german, christmasHours }, null, 2));
 }
 
 void main();

@@ -5,6 +5,9 @@ export type OpeningHoursEntry = {
   weekday: number;
   opens: string | null;
   closes: string | null;
+  /** ISO date ("YYYY-MM-DD"). When set, this entry overrides the
+   * recurring weekday rule for that exact calendar date only. */
+  date?: string;
 };
 
 export type OpeningHoursLanguage = "en" | "de";
@@ -29,8 +32,34 @@ function describeHours(
 
 function matches(entry: OpeningHoursEntry, query: RetrievalQuery): boolean {
   return (
+    entry.date === undefined &&
     entry.location === query.metadata?.["location"] &&
     entry.weekday === query.metadata?.["weekday"]
+  );
+}
+
+function weekdayFromDate(date: string): number {
+  return new Date(`${date}T00:00:00Z`).getUTCDay();
+}
+
+function findByDate(
+  entries: OpeningHoursEntry[],
+  location: unknown,
+  date: string,
+): OpeningHoursEntry | undefined {
+  const override = entries.find(
+    entry => entry.date === date && entry.location === location,
+  );
+  if (override) {
+    return override;
+  }
+
+  const weekday = weekdayFromDate(date);
+  return entries.find(
+    entry =>
+      entry.date === undefined &&
+      entry.location === location &&
+      entry.weekday === weekday,
   );
 }
 
@@ -42,7 +71,11 @@ export function createOpeningHoursRetriever(
 
   return {
     async retrieve(query: RetrievalQuery): Promise<RetrievalResult> {
-      const match = entries.find(entry => matches(entry, query));
+      const date = query.metadata?.["date"];
+      const match =
+        typeof date === "string"
+          ? findByDate(entries, query.metadata?.["location"], date)
+          : entries.find(entry => matches(entry, query));
 
       if (!match) {
         return { evidence: [] };
